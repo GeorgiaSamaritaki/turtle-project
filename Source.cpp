@@ -6,20 +6,21 @@ START_PROGRAM
 try {
 	
 
-MAKE myMoves1 = LIST[
+MAKE myMoves = LIST[
 	LIST[(WORD:"FORWARD"), (NUMBER:100)],
 		LIST[(WORD:"LEFT"), (NUMBER:90)],
 		LIST[(WORD:"FORWARD"), (NUMBER:100)]
 ];
-printf("This");
+
 
 //define array variable
 //auto sec = { new array_l() };
 
-/*
+MAKE number = (NUMBER: 5);
+auto b = ((*new l_BOOLEAN()) = 0 ? true : true);
+
 MAKE array = ARRAY{
 	number,
-	hello,
 	(NUMBER: 12),
 	(BOOLEAN: TRUE),
 	ARRAY {
@@ -29,7 +30,8 @@ MAKE array = ARRAY{
 			(NUMBER:100)
 		]
 	}
-};*/
+};
+
 		//define book variable with sentence type
 	//MAKE book = SENTENCE(hello, (WORD: “hello!”))
 	

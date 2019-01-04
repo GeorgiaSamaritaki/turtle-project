@@ -33,7 +33,7 @@ public:
 		return number;
 	}
 
-	l_NUMBER &operator=(int i){
+	l_NUMBER& operator=(int i){
 		number = i;
 		return *this;
 	}
@@ -42,9 +42,10 @@ public:
 class l_BOOLEAN : public l_types{
 	bool boolean;
 public:
-	l_BOOLEAN(bool b) : l_types("Bool"), boolean(b) {}
+	l_BOOLEAN(bool b = NULL ) : l_types("Bool"), boolean(b) {}
 
 	void operator= (void* i) { boolean = (int)i; }
+
 	operator bool() {
 		return boolean;
 	}
@@ -123,8 +124,7 @@ public:
 	list_l() :l_types("List") {};
 
 	list_l& operator[](tmp_group &arr) {
-		for (auto it = arr.begin(); it != arr.end(); ++it)
-			push_back(*it);
+		assign(arr.begin(), arr.end());
 		return *this;
 	}
 	list_l& operator[](l_types &l) {
