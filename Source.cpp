@@ -1,44 +1,46 @@
-#include "LOGO.h"
+﻿#include "LOGO.h"
 
 
 START_PROGRAM
-
 try {
 	
-
-MAKE myMoves = LIST[
-	LIST[(WORD:"FORWARD"), (NUMBER:100)],
-		LIST[(WORD:"LEFT"), (NUMBER:90)],
-		LIST[(WORD:"FORWARD"), (NUMBER:100)]
-];
-
-
-//define array variable
-//auto sec = { new array_l() };
-
-MAKE number = (NUMBER: 5);
-auto b = ((*new l_BOOLEAN()) = 0 ? true : true);
-
-MAKE array = ARRAY{
-	number,
-	(NUMBER: 12),
-	(BOOLEAN: TRUE),
-	ARRAY {
-		myMoves,
-		LIST[
-			(WORD: "BACK"),
-			(NUMBER:100)
-		]
-	}
-};
-
-		//define book variable with sentence type
-	//MAKE book = SENTENCE(hello, (WORD: �hello!�))
 	
+	REPEAT NUMBER : 5 TIMES
+		DO
+		printf("this is the %d\n", REPCOUNT );// number of the current iteration
+		//FORWARD(NUMBER : 100); // move turtle 100 steps
 
-	}
-	catch (exception e) {
-		printf("\nNOPE\n");
-	}
-cout << "finish";
+
+	REPEAT NUMBER : 5 TIMES
+		DO
+		printf("~~~~%d\n", REPCOUNT);// number of the current iteration
+		//FORWARD(NUMBER : 100); // move turtle 100 steps
+
+
+
+
+		//RIGHT(NUMBER : 90); // turtle turns right 90 degrees
+	END;
+
+		//RIGHT(NUMBER : 90); // turtle turns right 90 degrees
+	END;
+
+		/*
+		 Εντολή REPEAT WHILE condition DO Instructions END.Παραδείγματα:
+	o REPEAT WHILE number != (NUMBER : 5)
+		DO
+		REPCOUNT // number of the current iteration
+		FORWARD(NUMBER : 100) // move turtle 100 steps
+		RIGHT(NUMBER : 90) // turtle turns right 90 degrees
+		ASSIGN number = DIFFERENCE(number, (NUMBER: 1))
+		END
+		 Εντολή FOREACH list DO Instructions END.Παραδείγματα:
+	o FOREACH myMoves DO
+		SHOW : ELEM //ELEM is each element of the list
+		END		*/
+
+}
+catch (exception e) {
+	printf("\nNOPE\n");
+}
 END_PROGRAM
