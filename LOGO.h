@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <cstdarg>
+#include <initializer_list>
 #include <stack>
 
 using namespace std;
@@ -26,7 +27,6 @@ public:
 	virtual void set(int i, l_types* item) = 0;
 	
 	virtual l_types* clone() const = 0;
-	virtual void print() const { std::cout << "Base"; }
 	virtual ~l_types() {};
 };
 
@@ -60,7 +60,6 @@ public:
 		number = *dynamic_cast<l_NUMBER *> (item);
 	}
 
-	virtual void print() const override { std::cout << "Derived"; }
 
 	l_types* clone() const override{
 		return new l_NUMBER(this->number);  
@@ -134,6 +133,10 @@ public:
 		push_back(&b);
 		return *this;
 	};
+	tmp_group_l& operator,(l_types *b) {
+		push_back(b);
+		return *this;
+	};
 
 };
 
@@ -144,30 +147,44 @@ tmp_group_l& operator,(l_types &a, l_types &b) {
 	arr->push_back(&b);
 	return *arr;
 };
-tmp_group_l& operator,(const l_types &a, const l_types *b) {
+tmp_group_l& operator,(l_types &a, l_types *b) {
 	tmp_group_l* arr = new tmp_group_l();
-	//arr->push_back(&a);
-	//arr->push_back(&b);
+	arr->push_back(&a);
+	arr->push_back(b);
 	return *arr;
 };
 
 
+
 class array_l : public l_types, public vector<l_types *> {
+	
+	template <class T,typename... REST >
+	typename enable_if<is_base_of<l_types, T>::value, void>::type
+	create_array(T first, const REST&... rest) {
+		push_back( (dynamic_cast<l_types *>(&first))->clone() );
+		create_array(rest...);
+	}
+	void create_array() {  }
+
 public:
 	
 	array_l():l_types("Array"){};
 	array_l(const array_l &l) :l_types("Array") {
 		for (auto x : l) this->push_back((*x).clone());
 	}
-	
-	template <class T>
-	typename enable_if<is_base_of<l_types, T>::value, array_l&>::type
-	operator=( initializer_list<T> l ) {
+
+	template<typename... Args>
+	array_l(Args...args) {
+		create_array(args...);
+	}
+
+	array_l& operator=( array_l *l ) {
 		this->clear();
-		for(auto x:l) push_back(x.clone());
+		for(auto x: *l) push_back((*x).clone());
 		return *this;
 	}
 
+	
 	l_types& get(int i) {
 		return *at(i);
 	}
@@ -195,8 +212,8 @@ public:
 		assign(arr.begin(), arr.end());
 		return *this;
 	}
-	list_l& operator[](l_types *l) {
-		push_back(l);
+	list_l& operator[](l_types &l) {
+		push_back(&l);
 		return *this;
 	}
 
@@ -296,11 +313,8 @@ l_BOOLEAN or_l() { return false; }
 class varstack {
 private:
 	stack<int *> s;
-	int ifcount;
 	static varstack *s_instance;
-	varstack() { 
-		ifcount = 0; 
-	};
+	varstack() { };
 public:
 	static varstack *instance(){
 		if (!s_instance) 
@@ -312,17 +326,31 @@ public:
 		s.push(i);
 	}
 	void pop() {
-		if(ifcount == 0) s.pop();
-		else ifcount--;
+		if (s.empty()) return;
+		s.pop();
 	}
 	int top() {
-		return  *s.top();
+		if (s.empty()) return -1;
+		stack<int *> temp;
+		int *i = s.top();
+		while (*i == -1) {
+			s.pop();
+			temp.push(i);
+			i = s.top();
+		}
+		while (!temp.empty()) {
+			s.push(temp.top());
+			temp.pop();
+		}
+		return  *i;
 	}
 	void ifcalled() {
-		ifcount++;
+		push(new int(-1));
 	}
-	void increment() {
+	bool increment() {
+		if (s.empty() || *s.top() == -1) return false;
 		(*s.top())++;
+		return true;
 	}
 
 };
@@ -330,18 +358,19 @@ varstack *varstack::s_instance = 0;
 
 #define TRUE true
 #define FALSE false
-#define MAKE auto
+#define MAKE ;auto
 
 #define NUMBER (*new l_NUMBER()) = 0? 0
 #define WORD (*new l_WORD()) = 0? ""
 #define BOOLEAN (*new l_BOOLEAN()) = 0? true
 #define LIST (*new list_l())
-#define ARRAY (* new array_l() ) = 
-#define SENTENCE new sentence_l
+#define ARRAY (*new array_l()) =  array_l
+#define SENTENCE(...) new sentence_l(__VA_ARGS__);
 				//intentionally left blank  
 #define AND and_l;
 #define OR or_l;
 #define ELIF elseif(
+#define ELSE }else{
 #define IF	varstack::instance()->ifcalled(); \
 			if(
 #define DO ){ 
@@ -354,11 +383,16 @@ varstack *varstack::s_instance = 0;
 #define ITEM item_l
 #define MINUS minus_l
 #define QUOTIENT quotient_l
+#define PRODUCT product_l
 #define MODULO modulo_l
 
 
 #define REPEAT	varstack::instance()->push(new int()); for(  ;(varstack::instance()->top()) < (
 #define TIMES ); varstack::instance()->increment()
 #define REPCOUNT varstack::instance()->top() + 1
+
+#define WHILE 0);)	DO  END varstack::instance()->push(new int(-1)); \
+					while(  varstack::instance()->increment() &&
+#define FOREACH for(auto ELEM: 
 
 
