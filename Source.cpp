@@ -1,5 +1,13 @@
 ﻿#include "LOGO.h"
 
+TO draw_square WITH args FSTART// args is a list [length, [r,g,b]]
+		SETPENCOLOR ARG(NUMBER: 2)
+		REPEAT(NUMBER:4) TIMES
+		DO
+		FORWARD ARG(NUMBER: 1)
+		RIGHT(NUMBER: 90)
+		END
+FEND
 
 START_PROGRAM
 try {
@@ -7,13 +15,14 @@ try {
 	MAKE number = (NUMBER: 21); //define number variable with value 21
 	MAKE hello = (WORD: "hello"); //define hello variable with value “hello”
 						//define myMoves variable contains list of turtle moves
-			
+	
+	
 	MAKE myMoves = LIST[
 		LIST[(WORD:"FORWARD"), (NUMBER:100)],
 			LIST[(WORD:"LEFT"), (NUMBER:90)],
 			LIST[(WORD:"FORWARD"), (NUMBER:100)]
-	];
-			
+	]
+		SHOW : myMoves
 		
 	//define array variable
 	MAKE array = ARRAY {
@@ -21,82 +30,152 @@ try {
 		hello,
 		(NUMBER: 12),
 		(BOOLEAN: TRUE),
-		myMoves
+		ARRAY {
+			myMoves,
+			LIST[
+				(WORD: "BACK"),
+				(NUMBER:100)
+			]
+		}
 	};
-		printf("ok");
 	//define book variable with sentence type
 	MAKE book = SENTENCE(hello, (WORD: "hello!"))
 
-	ITEM({ (NUMBER: 4) }, array) // get value of 4th element(i.e. TRUE)
-	ITEM({ (NUMBER:5), (NUMBER:2) }, array) // get value of array
+	ITEM({ (NUMBER: 4) }, array); // get value of 4th element(i.e. TRUE)
+	
+	ITEM({ (NUMBER:5), (NUMBER:2) }, array); // get value of array
 											// i.e. {“BACK”, 100})
 	SETITEM({ (NUMBER:3) }, array, (NUMBER:1)) // set new value in
 												// 3rd element
-	SETITEM({ (NUMBER:5) }, array, myMoves) // set new value in
+
+	SETITEM({ (NUMBER:5) }, array, myMoves); // set new value in
 											// 5th element
-	/*
 
-			MAKE v = SUM((NUMBER : 12), ITEM({ (NUMBER:1) }, array)) // v = 12 + 21
-			SETITEM({ (NUMBER:3) }, array, SUM((NUMBER: 1), var)) // array[3] = 1 + 33
-			SSIGN number = DIFFERENCE((NUMBER : 12), number) // number = 12 - number
-			MAKE v2 = MINUS(number) // v2 = -12
-			MAKE v3 = PRODUCT((NUMBER : 12), number, v2)//v3=12*number*v2
-			MAKE v4 = QUOTIENT((NUMBER: 12), number) // v4 = 12 / 21
-			MAKE v5 = MODULO((NUMBER: 12), number) // v5 = 12 % 21
-			ASSIGN v5 = SUM(v2, PRODUCT(ITEM({ (NUMBER:1) }, array)), v3), v) // v5 = v2 + (array[1]*v3) + v
-			number == (NUMBER : 21) // BOOLEAN: TRUE
-			(NUMBER : 22) >= number // BOOLEAN: TRUE
-			number <= (NUMBER : 22) // BOOLEAN: FALSE
-			AND(number == (NUMBER: 5), text2 == text) // BOOLEAN: FALSE
-			OR( // BOOLEAN: TRUE
-				number == (NUMBER: 5),
-				ITEM({ (NUMBER:3) }, array), // this is TRUE…
-				text2 == text
-			)
-			OR( // BOOLEAN: TRUE
-				number == SUM((NUMBER:19), (NUMBER: 1), (NUMBER: 1)),
-				AND(text2 == text, number)
-			)
-				IF AND(number == (NUMBER: 5), text2 == text) DO
-					SETITEM({ (NUMBER:3) }, array, SUM((NUMBER: 1), newVar))
-				END
-				IF number == ITEM({ (NUMBER:2), (NUMBER:3) }, list) DO
-					SETITEM({ (NUMBER:3) }, array, SUM(newVar, (NUMBER: 1)))
-				ELIF number >= 5 DO
-					SETITEM({ (NUMBER:3) }, array, DIFFERENCE(newVar, (NUMBER: 1)))
-				END
+	MAKE v = sum_l( (NUMBER : 12), ITEM({ (NUMBER:1) }, array) ); // v = 12 + 21
+	
+	SETITEM({ (NUMBER:3) }, array, SUM((NUMBER: 1), v)); // array[3] = 1 + 33
+	
+	ASSIGN number = DIFFERENCE((NUMBER : 12), number); // number = 12 - number
+	MAKE v2 = MINUS(number); // v2 = -12
+	ASSIGN number = (NUMBER : 21) // number = 12 - number
+	
+	
+	MAKE v3 = PRODUCT((NUMBER : 12), number, v2)//v3=12*number*v2
+	MAKE v4 = QUOTIENT((NUMBER: 12), number) // v4 = 12 / 21
+	MAKE v5 = MODULO((NUMBER: 12), number)// v5 = 12 % 21
+	ASSIGN v5 = SUM(v2, PRODUCT(ITEM({ (NUMBER:1) }, array), v3), v); // v5 = v2 + (array[1]*v3) + v
+	auto a = (number == (NUMBER : 21)); // BOOLEAN: TRUE
+	auto b = ((NUMBER : 22) >= number); // BOOLEAN: TRUE
+	auto c = (number >= (NUMBER : 22)); // BOOLEAN: FALSE
+		
 
-				IF AND(number == (NUMBER: 5), text2 == text) DO
-					IF number == ITEM({ (NUMBER:2), (NUMBER:3) }, list) DO
-						SETITEM({ (NUMBER:3) }, array, SUM(newVar, (NUMBER: 1)))
-					ELSE
-						SETITEM({ (NUMBER:3) }, array, DIFFERENCE(newVar, (NUMBER: 1)))
-					END
-				END
-				REPEAT NUMBER : 5 TIMES
-					DO
-					REPCOUNT // number of the current iteration
-					FORWARD(NUMBER : 100) // move turtle 100 steps
-					RIGHT(NUMBER : 90) // turtle turns right 90 degrees
-				END
+	auto d = AND(
+		number == (NUMBER: 5), 
+		(BOOLEAN: TRUE)
+	); // BOOLEAN: FALSE
 
-				REPEAT WHILE number != (NUMBER : 5)
-				DO
-					REPCOUNT // number of the current iteration
-					FORWARD(NUMBER : 100) // move turtle 100 steps
-					RIGHT(NUMBER : 90) // turtle turns right 90 degrees
-					ASSIGN number = DIFFERENCE(number, (NUMBER: 1))
-				END
+	MAKE text = (WORD: "text")
+	MAKE text2 = (WORD: "text2")
 
-				FOREACH myMoves DO
-					SHOW : ELEM //ELEM is each element of the list
+
+	MAKE e = OR( // BOOLEAN: TRUE
+		ITEM({ (NUMBER:4) }, array), 
+		text2 == text
+	)
+	MAKE f = OR( // BOOLEAN: TRUE
+		number == SUM((NUMBER:19), (NUMBER: 1), (NUMBER: 1)),
+		AND(text2 == text, number)
+	);
+
+	MAKE list = LIST[
+		number,
+		LIST[
+			(NUMBER: 2), (NUMBER:3), (NUMBER:2)
+		]
+	];
+
+
+	IF AND(number == (NUMBER: 5), text2 == text) DO
+		SETITEM({ (NUMBER:3) }, array, SUM((NUMBER: 1), v))
+
+	END
+		
+	IF number == ITEM({ (NUMBER:2), (NUMBER:3) }, list) DO
+		SETITEM({ (NUMBER:3) }, array, SUM(v, (NUMBER: 1)))
+	ELIF number >= 5 DO
+		SETITEM({ (NUMBER:3) }, array, DIFFERENCE(v, (NUMBER: 1)))
+	END
+
+	IF AND(number == (NUMBER: 5), text2 == text) DO
+		IF number == ITEM({ (NUMBER:2), (NUMBER:3) }, list) DO
+			SETITEM({ (NUMBER:3) }, array, SUM(v, (NUMBER: 1)))
+		ELSE
+			SETITEM({ (NUMBER:3) }, array, DIFFERENCE(v, (NUMBER: 1)))
+		END
+	END
+
+	REPEAT NUMBER : 5 TIMES
+	DO
+		FORWARD(NUMBER : 100); // move turtle 100 steps
+		RIGHT(NUMBER : 90); // turtle turns right 90 degrees
+	END
+		
+		MAKE turtleMoves = LIST[
+			ARRAY	 { (WORD:"FORWARD"), (NUMBER: 100) },
+				ARRAY{ (WORD:"RIGHT"), (NUMBER: 90) },
+				ARRAY{ (WORD:"FORWARD"), (NUMBER: 100) },
+				ARRAY{ (WORD:"RIGHT"), (NUMBER: 90) },
+				ARRAY{ (WORD:"FORWARD"), (NUMBER: 100) },
+				ARRAY{ (WORD:"LEFT"), (NUMBER: 90) },
+				ARRAY{ (WORD:"FORWARD"), (NUMBER: 100) },
+				ARRAY{ (WORD:"LEFT"), (NUMBER: 90) }
+		]
+
+		CENTER
+		REPEAT 2 TIMES	DO
+			for (auto element : turtleMoves ){
+				IF ITEM({ (NUMBER: 1) }, ELEM) == (WORD: "FORWARD") DO
+					FORWARD ITEM({ (NUMBER: 2) }, ELEM)
+				ELIF ITEM({ (NUMBER: 1) }, ELEM) == (WORD: "BACK") DO
+					BACK ITEM({ (NUMBER: 2) }, ELEM)
+				ELIF ITEM({ (NUMBER: 1) }, ELEM) == (WORD: "LEFT") DO
+					LEFT ITEM({ (NUMBER: 2) }, ELEM)
+				ELSE
+					RIGHT ITEM({ (NUMBER: 2) }, ELEM)
 				END
-				*/
+			}
+		 END
+		PENUP
+		CENTER
+		RIGHT(NUMBER: 90)
+		FORWARD(NUMBER: 150)
+		PENDOWN
+		REPEAT(NUMBER: 360) TIMES DO
+		FORWARD(NUMBER: 2)
+		RIGHT(NUMBER: 1)
+		END
+	
+	CENTER
+	
+	CLEAR
 
 	printf("here");
-}
-catch (exception e) {
-	printf("\nNOPE\n");
+	REPEAT(NUMBER:36) TIMES DO
+		CALL draw_square(
+			LIST[ 
+				PRODUCT((NUMBER:12), REPCOUNT) ,
+				LIST[	SUM((NUMBER:12), REPCOUNT), 
+						(NUMBER:0), 
+						(NUMBER:0)
+				]
+			]
+		)
+		RIGHT(NUMBER: 10)
+	END
+
+}catch (exception e) {
+
 }
 
 END_PROGRAM
+

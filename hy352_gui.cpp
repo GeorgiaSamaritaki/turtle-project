@@ -427,14 +427,14 @@ int init_GUI()
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 
 	// Init pen color to white
-	PEN_COLOR.red = 255;
-	PEN_COLOR.green = 255;
-	PEN_COLOR.blue = 255;
+	PEN_COLOR.red = 0;
+	PEN_COLOR.green = 0;
+	PEN_COLOR.blue = 0;
 
-	// Init screen color to white
-	SCREEN_COLOR.red = 0;
-	SCREEN_COLOR.green = 0;
-	SCREEN_COLOR.blue = 0;
+	// Init screen color to black
+	SCREEN_COLOR.red = 255;
+	SCREEN_COLOR.green = 255;
+	SCREEN_COLOR.blue = 255;
 
 	TEXT_FONT = font;
 	// Init pen thickness to white
@@ -456,7 +456,7 @@ int init_GUI()
 
 void render_GUI()
 {
-
+	wait(0.1);
 }
 
 void destroy_GUI()
