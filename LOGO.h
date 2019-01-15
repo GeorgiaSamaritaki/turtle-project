@@ -8,20 +8,20 @@
 #include <cstdarg>
 #include <initializer_list>
 #include <stack>
+#include <cmath>
 
 using namespace std;
-
-
-class array_l;
 class l_BOOLEAN;
-
-template <class T> T& get_l_type();
+class l_NUMBER;
+class l_WORD;
 
 class l_types {
 	string type;
 public:
-	l_types(string t = "undefined") : type(t) {}
-	
+	l_types(string t = "undefined") : type(t) {};
+	l_types(double a) {};
+	string gettype() { return "l_NUMBER"; };
+
 	virtual l_BOOLEAN operator==(l_types& l) const = 0;
 	virtual l_types& get(int i = -1) = 0;
 	virtual void set(int i, l_types* item) = 0;
@@ -33,9 +33,9 @@ public:
 class l_BOOLEAN : public l_types{
 	bool boolean;
 public:
-	l_BOOLEAN(bool b = NULL ) : l_types("Bool"), boolean(b) {}
-
-	void operator= (void* i) { boolean = (int)i; }
+	l_BOOLEAN(bool b = NULL ) : l_types("Bool"), boolean(b) {
+	
+	}
 
 	operator bool() {
 		return boolean;
@@ -68,19 +68,19 @@ public:
 };
 
 class l_NUMBER: public l_types{
-	int number;
+	double number;
 public:
-	l_NUMBER(int a = 0) : l_types("Number"), number(a) {}
+	l_NUMBER(double a = 0) : l_types("Number"), number(a) {}
 	
-	operator int(){
+	operator double(){
 		return number;
 	}
+	
 
-	l_NUMBER& operator=(int i){
+	l_NUMBER& operator=(double i){
 		number = i;
 		return *this;
 	}
-
 	virtual l_BOOLEAN operator==(l_types& l) const override{
 		return l_BOOLEAN(this->number == dynamic_cast<l_NUMBER&>(l).number);
 	}
@@ -101,7 +101,6 @@ public:
 		return new l_NUMBER(this->number);  
 	}
 };
-
 
 class l_WORD : public l_types{
 	string str;
@@ -164,7 +163,6 @@ tmp_group_l& operator,(l_types &a, l_types &b) {
 };
 
 
-
 class array_l : public l_types, public vector<l_types *> {
 	
 	template <class T,typename... REST >
@@ -203,6 +201,7 @@ public:
 	l_types& get(int i) {
 		return *at(i);
 	}
+	
 	void set(int i, l_types* item) {
 		at(i) = item->clone();
 	}
@@ -251,10 +250,10 @@ public:
 		int i = dynamic_cast<l_NUMBER&>(l);
 		return *at(i);
 	}
+	
 	virtual void set(int i, l_types* item) override {
 		at(i) = item->clone();
 	}
-	
 	void show_l() const override {
 		cout << "List[ ";
 		for (auto i : *this) i->show_l();
@@ -330,7 +329,7 @@ l_NUMBER sum_l(l_types& a, l_types& b, l_types& c = *new l_NUMBER(0) ) {
 	return l_NUMBER (dynamic_cast<l_NUMBER&>(a) + dynamic_cast<l_NUMBER&>(b) + dynamic_cast<l_NUMBER&>(c));
 }
 
-l_NUMBER difference_l(l_types& a, l_types& b) {	return l_NUMBER(dynamic_cast<l_NUMBER&>(a) + dynamic_cast<l_NUMBER&>(b)) ; }
+l_NUMBER difference_l(l_types& a, l_types& b) {	return l_NUMBER(dynamic_cast<l_NUMBER&>(a) - dynamic_cast<l_NUMBER&>(b)) ; }
 
 l_NUMBER minus_l(l_types& a) { return l_NUMBER(dynamic_cast<l_NUMBER&>(a) * (-1)); }
 
@@ -344,7 +343,7 @@ l_NUMBER quotient_l(l_types& a, l_types& b) {
 }
 
 l_NUMBER modulo_l(l_types& a, l_types& b) { 
-	return l_NUMBER(dynamic_cast<l_NUMBER&>(a) % dynamic_cast<l_NUMBER&>(b));
+	return l_NUMBER(fmod(dynamic_cast<l_NUMBER&>(a) ,dynamic_cast<l_NUMBER&>(b)));
 }
 
 
@@ -371,7 +370,7 @@ l_BOOLEAN or_l() { return true; }
 
 class varstack {
 private:
-	stack<int *> s;
+	stack<double *> s;
 	static varstack *s_instance;
 	varstack() { };
 public:
@@ -381,17 +380,17 @@ public:
 		return s_instance;
 	}
 
-	void push(int *i) {
+	void push(double *i) {
 		s.push(i);
 	}
 	void pop() {
 		if (s.empty()) return;
 		s.pop();
 	}
-	int top() {
+	double top() {
 		if (s.empty()) return -1;
-		stack<int *> temp;
-		int *i = s.top();
+		stack<double *> temp;
+		double *i = s.top();
 		while (*i == -2 && !s.empty()) {
 			s.pop();
 			temp.push(i);
@@ -404,7 +403,7 @@ public:
 		return *i;
 	}
 	void ifcalled() {
-		push(new int(-2));
+		push(new double(-2));
 	}
 	bool increment() {
 		if (s.empty() || *s.top() == -2) return false;
@@ -566,11 +565,11 @@ public:
 #define MODULO modulo_l
 
 
-#define REPEAT	;varstack::instance()->push(new int()); for(  ;(varstack::instance()->top()) < (
+#define REPEAT	;varstack::instance()->push(new double()); for(  ;(varstack::instance()->top()) < (
 #define TIMES ); varstack::instance()->increment()
 #define REPCOUNT l_NUMBER(varstack::instance()->top() + 1)
 
-#define WHILE 0);	DO  END varstack::instance()->push(new int(-1)); \
+#define WHILE 0);	DO  END varstack::instance()->push(new double(-1)); \
 					while(  (varstack::instance()->increment()) && 
 
 #define FOREACH for(auto element: 
@@ -594,9 +593,9 @@ public:
 #define PENUP		   ;pen_up();
 
 #define TO void
-#define WITH ( list_l& 
-#define ARG(...) args.get((__VA_ARGS__) - 1)
+#define WITH ( list_l& arguement_list_function) { int 
+#define ARG(...) arguement_list_function.get((__VA_ARGS__) - 1)
 #define CALL  ;
-#define FSTART ){
+#define FSTART ;
 #define RETURN ;return ;
 #define FEND ;return;}

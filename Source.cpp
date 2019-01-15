@@ -1,6 +1,7 @@
 ﻿#include "LOGO.h"
 
-TO draw_square WITH args FSTART// args is a list [length, [r,g,b]]
+TO draw_square WITH args FSTART
+	// args is a list [length, [r,g,b]]
 		SETPENCOLOR ARG(NUMBER: 2)
 		REPEAT(NUMBER:4) TIMES
 		DO
@@ -11,7 +12,7 @@ FEND
 
 START_PROGRAM
 try {
-
+		
 	MAKE number = (NUMBER: 21); //define number variable with value 21
 	MAKE hello = (WORD: "hello"); //define hello variable with value “hello”
 						//define myMoves variable contains list of turtle moves
@@ -23,7 +24,7 @@ try {
 			LIST[(WORD:"FORWARD"), (NUMBER:100)]
 	]
 		SHOW : myMoves
-		
+			//MAKE newvar = myMoves.get(0);
 	//define array variable
 	MAKE array = ARRAY {
 		number,
@@ -41,10 +42,13 @@ try {
 	//define book variable with sentence type
 	MAKE book = SENTENCE(hello, (WORD: "hello!"))
 
-	ITEM({ (NUMBER: 4) }, array); // get value of 4th element(i.e. TRUE)
+	
+	ITEM({ (NUMBER: 4) }, array);
+	// get value of 4th element(i.e. TRUE)
 	
 	ITEM({ (NUMBER:5), (NUMBER:2) }, array); // get value of array
 											// i.e. {“BACK”, 100})
+
 	SETITEM({ (NUMBER:3) }, array, (NUMBER:1)) // set new value in
 												// 3rd element
 
@@ -64,12 +68,12 @@ try {
 	MAKE v4 = QUOTIENT((NUMBER: 12), number) // v4 = 12 / 21
 	MAKE v5 = MODULO((NUMBER: 12), number)// v5 = 12 % 21
 	ASSIGN v5 = SUM(v2, PRODUCT(ITEM({ (NUMBER:1) }, array), v3), v); // v5 = v2 + (array[1]*v3) + v
-	auto a = (number == (NUMBER : 21)); // BOOLEAN: TRUE
-	auto b = ((NUMBER : 22) >= number); // BOOLEAN: TRUE
-	auto c = (number >= (NUMBER : 22)); // BOOLEAN: FALSE
-		
+	MAKE a = (number == (NUMBER : 21)); // BOOLEAN: TRUE
+	MAKE b = ((NUMBER : 22) >= number); // BOOLEAN: TRUE
+	MAKE c = (number >= (NUMBER : 22)); // BOOLEAN: FALSE
+	
 
-	auto d = AND(
+	MAKE d = AND(
 		number == (NUMBER: 5), 
 		(BOOLEAN: TRUE)
 	); // BOOLEAN: FALSE
@@ -133,7 +137,7 @@ try {
 
 		CENTER
 		REPEAT 2 TIMES	DO
-			for (auto element : turtleMoves ){
+			FOREACH turtleMoves DO
 				IF ITEM({ (NUMBER: 1) }, ELEM) == (WORD: "FORWARD") DO
 					FORWARD ITEM({ (NUMBER: 2) }, ELEM)
 				ELIF ITEM({ (NUMBER: 1) }, ELEM) == (WORD: "BACK") DO
@@ -143,7 +147,7 @@ try {
 				ELSE
 					RIGHT ITEM({ (NUMBER: 2) }, ELEM)
 				END
-			}
+			END
 		 END
 		PENUP
 		CENTER
