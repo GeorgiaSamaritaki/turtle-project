@@ -11,16 +11,14 @@
 #include <cmath>
 
 using namespace std;
+class array_l;
 class l_BOOLEAN;
-class l_NUMBER;
-class l_WORD;
+
 
 class l_types {
 	string type;
 public:
-	l_types(string t = "undefined") : type(t) {};
-	l_types(double a) {};
-	string gettype() { return "l_NUMBER"; };
+	l_types(string t = "undefined") : type(t) {}
 
 	virtual l_BOOLEAN operator==(l_types& l) const = 0;
 	virtual l_types& get(int i = -1) = 0;
@@ -30,12 +28,10 @@ public:
 	virtual ~l_types() {};
 };
 
-class l_BOOLEAN : public l_types{
+class l_BOOLEAN : public l_types {
 	bool boolean;
 public:
-	l_BOOLEAN(bool b = NULL ) : l_types("Bool"), boolean(b) {
-	
-	}
+	l_BOOLEAN(bool b = NULL) : l_types("Bool"), boolean(b) {}
 
 	operator bool() {
 		return boolean;
@@ -44,7 +40,7 @@ public:
 		boolean = b;
 		return *this;
 	}
-	virtual l_BOOLEAN operator==(l_types& l) const override{
+	virtual l_BOOLEAN operator==(l_types& l) const override {
 		return l_BOOLEAN(this->boolean == dynamic_cast<l_BOOLEAN&>(l).boolean);
 	}
 
@@ -56,10 +52,10 @@ public:
 		boolean = *dynamic_cast<l_BOOLEAN *> (item);
 	}
 	void displayInfo(ostream& os = cout) const {
-		os <<"Boolean" << boolean;
+		os << "Boolean" << boolean;
 	}
 	void show_l() const override {
-		cout <<"(BOOLEAN: " <<boolean << ") ";
+		cout << "(BOOLEAN: " << boolean << ") ";
 	}
 
 	l_types* clone() const override {
@@ -67,21 +63,22 @@ public:
 	}
 };
 
-class l_NUMBER: public l_types{
+class l_NUMBER : public l_types {
 	double number;
 public:
 	l_NUMBER(double a = 0) : l_types("Number"), number(a) {}
-	
-	operator double(){
+	l_NUMBER(int a) : l_types("Number"), number(a) {}
+
+	operator double() {
 		return number;
 	}
-	
 
-	l_NUMBER& operator=(double i){
+	l_NUMBER& operator=(double i) {
 		number = i;
 		return *this;
 	}
-	virtual l_BOOLEAN operator==(l_types& l) const override{
+
+	virtual l_BOOLEAN operator==(l_types& l) const override {
 		return l_BOOLEAN(this->number == dynamic_cast<l_NUMBER&>(l).number);
 	}
 
@@ -89,20 +86,21 @@ public:
 		return *this;
 	};
 
-	virtual void set(int i, l_types* item) override{
+	virtual void set(int i, l_types* item) override {
 		number = *dynamic_cast<l_NUMBER *> (item);
 	}
 
 	void show_l() const override {
-		cout <<"(NUMBER:"<< number << ") ";
+		cout << "(NUMBER:" << number << ") ";
 	}
 
-	l_types* clone() const override{
-		return new l_NUMBER(this->number);  
+	l_types* clone() const override {
+		return new l_NUMBER(this->number);
 	}
 };
 
-class l_WORD : public l_types{
+
+class l_WORD : public l_types {
 	string str;
 public:
 
@@ -112,14 +110,14 @@ public:
 	operator string() {
 		return *this;
 	}
-	l_WORD& operator=(string s){
+	l_WORD& operator=(string s) {
 		str.assign(s);
 		return *this;
 	}
 	virtual l_BOOLEAN operator==(l_types& l) const override {
 		return str.compare(dynamic_cast<l_WORD&>(l).str) == 0;
 	}
-	
+
 	l_types& get(int i = -1) override {
 		return *this;
 	};
@@ -131,20 +129,20 @@ public:
 	virtual void set(int i, l_types* item) override {
 		*this = *dynamic_cast<l_WORD *> (item); // equality is overwritten
 	}
-	
+
 	void show_l() const override {
-		cout <<"(WORD: " << str <<") ";
+		cout << "(WORD: " << str << ") ";
 	}
 
 	l_types * clone() const override {
 		return new l_WORD(*this);
 	}
-	
+
 };
 
 class tmp_group_l : public vector<l_types*> {
 public:
-	tmp_group_l(){};
+	tmp_group_l() {};
 
 	tmp_group_l& operator,(l_types &b) {
 		push_back(&b);
@@ -163,19 +161,20 @@ tmp_group_l& operator,(l_types &a, l_types &b) {
 };
 
 
+
 class array_l : public l_types, public vector<l_types *> {
-	
-	template <class T,typename... REST >
+
+	template <class T, typename... REST >
 	typename enable_if<is_base_of<l_types, T>::value, void>::type
-	create_array(T first, const REST&... rest) {
-		push_back( (dynamic_cast<l_types *>(&first))->clone() );
+		create_array(T first, const REST&... rest) {
+		push_back((dynamic_cast<l_types *>(&first))->clone());
 		create_array(rest...);
 	}
 	void create_array() {  }
 
 public:
-	
-	array_l():l_types("Array"){};
+
+	array_l() :l_types("Array") {};
 	array_l(const array_l &l) :l_types("Array") {
 		for (auto x : l) this->push_back((*x).clone());
 	}
@@ -185,9 +184,9 @@ public:
 		create_array(args...);
 	}
 
-	array_l& operator=( array_l *l ) {
+	array_l& operator=(array_l *l) {
 		this->clear();
-		for(auto x: *l) push_back((*x).clone());
+		for (auto x : *l) push_back((*x).clone());
 		return *this;
 	}
 
@@ -201,7 +200,6 @@ public:
 	l_types& get(int i) {
 		return *at(i);
 	}
-	
 	void set(int i, l_types* item) {
 		at(i) = item->clone();
 	}
@@ -218,7 +216,7 @@ public:
 
 };
 
-class list_l : public l_types, public vector<l_types*>{
+class list_l : public l_types, public vector<l_types*> {
 public:
 
 	list_l() :l_types("List") {};
@@ -250,10 +248,10 @@ public:
 		int i = dynamic_cast<l_NUMBER&>(l);
 		return *at(i);
 	}
-	
 	virtual void set(int i, l_types* item) override {
 		at(i) = item->clone();
 	}
+
 	void show_l() const override {
 		cout << "List[ ";
 		for (auto i : *this) i->show_l();
@@ -263,7 +261,7 @@ public:
 	l_types* clone() const override {
 		return new list_l(*this);
 	}
-	
+
 };
 
 class sentence_l : public l_types, public vector<l_WORD *> {
@@ -277,7 +275,7 @@ public:
 		this->push_back(dynamic_cast<l_WORD*> (arg.clone()));
 		add(rest...);
 	}
-	
+
 	template<typename ... following>
 	void add(l_WORD arg, const following&... rest) {
 		this->push_back(dynamic_cast<l_WORD*> (arg.clone()));
@@ -297,7 +295,7 @@ public:
 	virtual void set(int i, l_types* item) override {
 		at(i) = dynamic_cast<l_WORD*> (item);
 	}
-	
+
 	void show_l() const override {
 		cout << "Sentence: ";
 		for (auto i : *this) i->show_l();
@@ -310,30 +308,30 @@ public:
 };
 
 l_types& item_l(initializer_list<l_NUMBER> list, const l_types& array) {
-	l_types* item = const_cast<l_types* >(&array);
-	for (auto i : list) item = &item->get(i-1);
+	l_types* item = const_cast<l_types*>(&array);
+	for (auto i : list) item = &item->get(i - 1);
 	return *item;
 }
 
 void setitem_l(initializer_list<l_NUMBER> list, l_types& array, l_types &new_value) {
 	l_types& item = const_cast<l_types&>(array);
-	unsigned int i; 
+	unsigned int i;
 	auto j = list.begin();
-	for (i = 0; i < list.size() - 1; i++, j++) 
-		item = item.get( (*const_cast<l_NUMBER*>(j)) - 1 );
-	
-	item.set(*const_cast<l_NUMBER*>(j)-1, &new_value);
+	for (i = 0; i < list.size() - 1; i++, j++)
+		item = item.get((*const_cast<l_NUMBER*>(j)) - 1);
+
+	item.set(*const_cast<l_NUMBER*>(j) - 1, &new_value);
 }
 
-l_NUMBER sum_l(l_types& a, l_types& b, l_types& c = *new l_NUMBER(0) ) {
-	return l_NUMBER (dynamic_cast<l_NUMBER&>(a) + dynamic_cast<l_NUMBER&>(b) + dynamic_cast<l_NUMBER&>(c));
+l_NUMBER sum_l(l_types& a, l_types& b, l_types& c = *new l_NUMBER(0)) {
+	return l_NUMBER(dynamic_cast<l_NUMBER&>(a) + dynamic_cast<l_NUMBER&>(b) + dynamic_cast<l_NUMBER&>(c));
 }
 
-l_NUMBER difference_l(l_types& a, l_types& b) {	return l_NUMBER(dynamic_cast<l_NUMBER&>(a) - dynamic_cast<l_NUMBER&>(b)) ; }
+l_NUMBER difference_l(l_types& a, l_types& b) { return l_NUMBER(dynamic_cast<l_NUMBER&>(a) - dynamic_cast<l_NUMBER&>(b)); }
 
 l_NUMBER minus_l(l_types& a) { return l_NUMBER(dynamic_cast<l_NUMBER&>(a) * (-1)); }
 
-l_NUMBER product_l(l_types& a, l_types& b, l_types& c = *new l_NUMBER(1)) { 
+l_NUMBER product_l(l_types& a, l_types& b, l_types& c = *new l_NUMBER(1)) {
 	return l_NUMBER(dynamic_cast<l_NUMBER&>(a) * dynamic_cast<l_NUMBER&>(b) * dynamic_cast<l_NUMBER&>(c));
 }
 
@@ -342,8 +340,8 @@ l_NUMBER quotient_l(l_types& a, l_types& b) {
 	return l_NUMBER(dynamic_cast<l_NUMBER&>(a) / dynamic_cast<l_NUMBER&>(b));
 }
 
-l_NUMBER modulo_l(l_types& a, l_types& b) { 
-	return l_NUMBER(fmod(dynamic_cast<l_NUMBER&>(a) ,dynamic_cast<l_NUMBER&>(b)));
+l_NUMBER modulo_l(l_types& a, l_types& b) {
+	return l_NUMBER(fmod(dynamic_cast<l_NUMBER&>(a), dynamic_cast<l_NUMBER&>(b)));
 }
 
 
@@ -351,8 +349,8 @@ template<typename... Args>
 l_BOOLEAN and_l(Args&...args) {
 	return and_l(&args...);
 }
-template<class T, typename... REST > 
-l_BOOLEAN and_l(T first, const REST... rest){
+template<class T, typename... REST >
+l_BOOLEAN and_l(T first, const REST... rest) {
 	return (bool)(first) && and_l(rest...);
 }
 l_BOOLEAN and_l() { return true; }
@@ -370,27 +368,27 @@ l_BOOLEAN or_l() { return true; }
 
 class varstack {
 private:
-	stack<double *> s;
+	stack<int *> s;
 	static varstack *s_instance;
 	varstack() { };
 public:
-	static varstack *instance(){
-		if (!s_instance) 
+	static varstack *instance() {
+		if (!s_instance)
 			s_instance = new varstack();
 		return s_instance;
 	}
 
-	void push(double *i) {
+	void push(int *i) {
 		s.push(i);
 	}
 	void pop() {
 		if (s.empty()) return;
 		s.pop();
 	}
-	double top() {
+	int top() {
 		if (s.empty()) return -1;
-		stack<double *> temp;
-		double *i = s.top();
+		stack<int *> temp;
+		int *i = s.top();
 		while (*i == -2 && !s.empty()) {
 			s.pop();
 			temp.push(i);
@@ -403,7 +401,7 @@ public:
 		return *i;
 	}
 	void ifcalled() {
-		push(new double(-2));
+		push(new int(-2));
 	}
 	bool increment() {
 		if (s.empty() || *s.top() == -2) return false;
@@ -436,7 +434,7 @@ public:
 
 class rotate_l {
 public:
-	rotate_l(){}
+	rotate_l() {}
 	void operator=(l_types& i) {
 		turtle_rotate(dynamic_cast<l_NUMBER&>(i));
 	}
@@ -501,7 +499,7 @@ public:
 		unsigned int x = dynamic_cast<l_NUMBER&>(l.get(0));
 		unsigned int y = dynamic_cast<l_NUMBER&>(l.get(1));
 		unsigned int z = dynamic_cast<l_NUMBER&>(l.get(2));
-		set_pen_color(x,y,z);
+		set_pen_color(x, y, z);
 	}
 };
 class setscreencolor_l {
@@ -511,12 +509,12 @@ public:
 		unsigned int x = dynamic_cast<l_NUMBER&>(l.get(0));
 		unsigned int y = dynamic_cast<l_NUMBER&>(l.get(1));
 		unsigned int z = dynamic_cast<l_NUMBER&>(l.get(2));
-		set_screen_color(x,y,z);
+		set_screen_color(x, y, z);
 	}
 };
 class setpensize_l {
 public:
-	class setpensize_l () {}
+	class setpensize_l() {}
 	void operator=(l_types& i) {
 		set_pen_thickness((float)dynamic_cast<l_NUMBER&>(i));
 	}
@@ -524,7 +522,7 @@ public:
 
 class show_l {
 public:
-	class show_l () {}
+	class show_l() {}
 	void operator=(l_types& i) {
 		i.show_l();
 	}
@@ -544,7 +542,7 @@ public:
 #define LIST (*new list_l())
 #define ARRAY (*new array_l()) =  array_l
 #define SENTENCE(...) *new sentence_l(__VA_ARGS__);
-				
+
 #define AND and_l
 #define OR or_l
 #define ELIF ;}else if(
@@ -565,15 +563,15 @@ public:
 #define MODULO modulo_l
 
 
-#define REPEAT	;varstack::instance()->push(new double()); for(  ;(varstack::instance()->top()) < (
+#define REPEAT	;varstack::instance()->push(new int()); for(  ;(varstack::instance()->top()) < (
 #define TIMES ); varstack::instance()->increment()
 #define REPCOUNT l_NUMBER(varstack::instance()->top() + 1)
 
-#define WHILE 0);	DO  END varstack::instance()->push(new double(-1)); \
+#define WHILE 0);	DO  END varstack::instance()->push(new int(-1)); \
 					while(  (varstack::instance()->increment()) && 
 
-#define FOREACH for(auto element: 
-#define ELEM *element
+#define ELEM *ELEM
+#define FOREACH for (auto ELEM :
 
 #define FORWARD	;forward_l() =
 #define BACK	;back_l() = 
@@ -593,8 +591,8 @@ public:
 #define PENUP		   ;pen_up();
 
 #define TO void
-#define WITH ( list_l& arguement_list_function) { int 
-#define ARG(...) arguement_list_function.get((__VA_ARGS__) - 1)
+#define ARG(...) ARG.get((__VA_ARGS__) - 1)
+#define WITH ( list_l& ARG){ int
 #define CALL  ;
 #define FSTART ;
 #define RETURN ;return ;
