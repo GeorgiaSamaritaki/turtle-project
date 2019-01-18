@@ -15,7 +15,7 @@ try {
 	MAKE number = (NUMBER: 21); //define number variable with value 21
 	MAKE hello = (WORD: "hello"); //define hello variable with value “hello”
 						//define myMoves variable contains list of turtle moves
-
+	
 
 	MAKE myMoves = LIST[
 		LIST[(WORD:"FORWARD"), (NUMBER:100)],
@@ -41,14 +41,14 @@ try {
 		//define book variable with sentence type
 		MAKE book = SENTENCE(hello, (WORD: "hello!"))
 
-			ITEM({ (NUMBER: 4) }, array); // get value of 4th element(i.e. TRUE)
+		 ITEM({ (NUMBER: 4) }, array); // get value of 4th element(i.e. TRUE)
 
 		ITEM({ (NUMBER:5), (NUMBER:2) }, array); // get value of array
 												// i.e. {“BACK”, 100})
 		SETITEM({ (NUMBER:3) }, array, (NUMBER:1)) // set new value in
 													// 3rd element
 
-			SETITEM({ (NUMBER:5) }, array, myMoves); // set new value in
+		SETITEM({ (NUMBER:5) }, array, myMoves); // set new value in
 													// 5th element
 
 		MAKE v = sum_l((NUMBER : 12), ITEM({ (NUMBER:1) }, array)); // v = 12 + 21

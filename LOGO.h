@@ -19,12 +19,19 @@ class l_types {
 	string type;
 public:
 	l_types(string t = "undefined") : type(t) {}
+	string gettype() { return type; }
+	/*
+	template<class T, bool _Test = is_base_of<l_types, T> >
+	enable_if <  _Test, l_BOOLEAN& >
+	 transform(l_BOOLEAN& a) { return a;}
+	*/
 
 	virtual l_BOOLEAN operator==(l_types& l) const = 0;
 	virtual l_types& get(int i = -1) = 0;
 	virtual void set(int i, l_types* item) = 0;
 	virtual void show_l() const = 0;
 	virtual l_types* clone() const = 0;
+
 	virtual ~l_types() {};
 };
 
@@ -40,6 +47,7 @@ public:
 		boolean = b;
 		return *this;
 	}
+
 	virtual l_BOOLEAN operator==(l_types& l) const override {
 		return l_BOOLEAN(this->boolean == dynamic_cast<l_BOOLEAN&>(l).boolean);
 	}
@@ -58,7 +66,7 @@ public:
 		cout << "(BOOLEAN: " << boolean << ") ";
 	}
 
-	l_types* clone() const override {
+	l_BOOLEAN* clone() const override {
 		return new l_BOOLEAN(this->boolean);
 	}
 };
@@ -94,7 +102,7 @@ public:
 		cout << "(NUMBER:" << number << ") ";
 	}
 
-	l_types* clone() const override {
+	l_NUMBER* clone() const override {
 		return new l_NUMBER(this->number);
 	}
 };
@@ -118,7 +126,7 @@ public:
 		return str.compare(dynamic_cast<l_WORD&>(l).str) == 0;
 	}
 
-	l_types& get(int i = -1) override {
+	l_WORD& get(int i = -1) override {
 		return *this;
 	};
 
@@ -134,7 +142,7 @@ public:
 		cout << "(WORD: " << str << ") ";
 	}
 
-	l_types * clone() const override {
+	l_WORD* clone() const override {
 		return new l_WORD(*this);
 	}
 
@@ -153,13 +161,13 @@ public:
 		return *this;
 	};
 };
+
 tmp_group_l& operator,(l_types &a, l_types &b) {
 	tmp_group_l* arr = new tmp_group_l();
 	arr->push_back(&a);
 	arr->push_back(&b);
 	return *arr;
 };
-
 
 
 class array_l : public l_types, public vector<l_types *> {
@@ -194,7 +202,7 @@ public:
 		return this->operator==(dynamic_cast<array_l&>(l));
 	}
 
-	l_types& get() {
+	array_l& get() {
 		return *this;
 	}
 	l_types& get(int i) {
@@ -210,7 +218,7 @@ public:
 		cout << "}" << endl;
 	}
 
-	l_types* clone() const override {
+	array_l* clone() const override {
 		return new array_l(*this);
 	}
 
@@ -236,7 +244,7 @@ public:
 	virtual l_BOOLEAN operator==(l_types& l) const override {
 		return this->operator==(dynamic_cast<list_l&>(l));
 	}
-	l_types& get() {
+	list_l& get(){
 		return *this;
 	}
 
@@ -258,7 +266,7 @@ public:
 		cout << "]" << endl;
 	}
 
-	l_types* clone() const override {
+	list_l* clone() const override {
 		return new list_l(*this);
 	}
 
@@ -283,7 +291,7 @@ public:
 	}
 	void add() {};
 
-	l_types& get(int i = 0) {
+	l_types& get(int i) {
 		//check size
 		return *at(i);
 	}
@@ -302,10 +310,11 @@ public:
 		cout << endl;
 	}
 
-	l_types* clone() const override {
+	sentence_l* clone() const override {
 		return new sentence_l(*this);
 	}
 };
+
 
 l_types& item_l(initializer_list<l_NUMBER> list, const l_types& array) {
 	l_types* item = const_cast<l_types*>(&array);
@@ -468,10 +477,15 @@ void clear_l() {
 }
 
 class setxy_l {
+	int a;
 public:
 	setxy_l() {}
-	void operator=(tmp_group_l &arr) {
-		turtle_go_to_position((int)arr.at(0), (int)arr.at(1));
+	setxy_l& operator=(l_types &a_) {
+		a = dynamic_cast<l_NUMBER&>(a_);
+		return *this;
+	}
+	void operator,(l_types &b_) {
+		turtle_go_to_position(a, dynamic_cast<l_NUMBER&>(b_));
 		render_GUI();
 	}
 };
@@ -528,7 +542,6 @@ public:
 	}
 };
 
-
 #define START_PROGRAM int main(){ init_GUI();
 #define END_PROGRAM  destroy_GUI(); return 0;}
 
@@ -582,7 +595,7 @@ public:
 #define SETXY	;setxy_l() =
 #define CIRCLE	;circle_l() = 
 #define PRINT	;print_l() =
-#define SHOW	; show_l() = 0? (l_types&)l_NUMBER()
+#define SHOW	;show_l() = 0? (l_types&)l_NUMBER()
 
 #define SETPENCOLOR    ;setpencolor_l() =   
 #define SETSCREENCOLOR ;setscreencolor_l() =   
