@@ -27,6 +27,12 @@ public:
 	*/
 
 	virtual l_BOOLEAN operator==(l_types& l) const = 0;
+	virtual l_BOOLEAN operator>=(l_types& l) const = 0;
+	virtual l_BOOLEAN operator<=(l_types& l) const = 0;
+	virtual l_BOOLEAN operator!=(l_types& l) const = 0;
+	virtual l_BOOLEAN operator>(l_types& l) const = 0;
+	virtual l_BOOLEAN operator<(l_types& l) const = 0;
+
 	virtual l_types& get(int i = -1) = 0;
 	virtual void set(int i, l_types* item) = 0;
 	virtual void show_l() const = 0;
@@ -48,9 +54,6 @@ public:
 		return *this;
 	}
 
-	virtual l_BOOLEAN operator==(l_types& l) const override {
-		return l_BOOLEAN(this->boolean == dynamic_cast<l_BOOLEAN&>(l).boolean);
-	}
 
 	l_types& get(int i = -1) override {
 		return *this;
@@ -69,6 +72,17 @@ public:
 	l_BOOLEAN* clone() const override {
 		return new l_BOOLEAN(this->boolean);
 	}
+
+	virtual l_BOOLEAN operator==(l_types& l) const override {
+		return l_BOOLEAN(this->boolean == dynamic_cast<l_BOOLEAN&>(l).boolean);
+	}
+	virtual l_BOOLEAN operator!=(l_types& l) const override {
+		return l_BOOLEAN(this->boolean != dynamic_cast<l_BOOLEAN&>(l).boolean);
+	}
+	virtual l_BOOLEAN operator>=(l_types& l) const override { return operator==(l);}
+	virtual l_BOOLEAN operator<=(l_types& l) const override { return operator==(l);}
+	virtual l_BOOLEAN operator>(l_types& l) const override  { return operator!=(l);}
+	virtual l_BOOLEAN operator<(l_types& l) const override  { return operator!=(l);}
 };
 
 class l_NUMBER : public l_types {
@@ -88,6 +102,21 @@ public:
 
 	virtual l_BOOLEAN operator==(l_types& l) const override {
 		return l_BOOLEAN(this->number == dynamic_cast<l_NUMBER&>(l).number);
+	}
+	virtual l_BOOLEAN operator!=(l_types& l) const override {
+		return l_BOOLEAN(this->number != dynamic_cast<l_NUMBER&>(l).number);
+	}
+	virtual l_BOOLEAN operator>=(l_types& l) const override {
+		return l_BOOLEAN(this->number >= dynamic_cast<l_NUMBER&>(l).number);
+	}
+	virtual l_BOOLEAN operator<=(l_types& l) const override {
+		return l_BOOLEAN(this->number <= dynamic_cast<l_NUMBER&>(l).number);
+	}
+	virtual l_BOOLEAN operator>(l_types& l) const override {
+		return l_BOOLEAN(this->number > dynamic_cast<l_NUMBER&>(l).number);
+	}
+	virtual l_BOOLEAN operator<(l_types& l) const override {
+		return l_BOOLEAN(this->number < dynamic_cast<l_NUMBER&>(l).number);
 	}
 
 	l_types& get(int i = -1) override {
@@ -122,9 +151,17 @@ public:
 		str.assign(s);
 		return *this;
 	}
+
 	virtual l_BOOLEAN operator==(l_types& l) const override {
 		return str.compare(dynamic_cast<l_WORD&>(l).str) == 0;
 	}
+
+	virtual l_BOOLEAN operator!=(l_types& l) const override { return str.compare(dynamic_cast<l_WORD&>(l).str) != 0; }
+	virtual l_BOOLEAN operator>=(l_types& l) const override { return str.compare(dynamic_cast<l_WORD&>(l).str) >= 0; }
+	virtual l_BOOLEAN operator<=(l_types& l) const override { return str.compare(dynamic_cast<l_WORD&>(l).str) <= 0; }
+	virtual l_BOOLEAN operator>(l_types& l) const override { return str.compare(dynamic_cast<l_WORD&>(l).str) > 0; }
+	virtual l_BOOLEAN operator<(l_types& l) const override { return str.compare(dynamic_cast<l_WORD&>(l).str) < 0; }
+	
 
 	l_WORD& get(int i = -1) override {
 		return *this;
@@ -202,6 +239,13 @@ public:
 		return this->operator==(dynamic_cast<array_l&>(l));
 	}
 
+	virtual l_BOOLEAN operator!=(l_types& l) const override { return this->operator!=(dynamic_cast<array_l&>(l));}
+	virtual l_BOOLEAN operator>=(l_types& l) const override { return this->operator>=(dynamic_cast<array_l&>(l));}
+	virtual l_BOOLEAN operator<=(l_types& l) const override { return this->operator<=(dynamic_cast<array_l&>(l));}
+	virtual l_BOOLEAN operator>(l_types& l) const override	{ return this->operator>(dynamic_cast<array_l&>(l));}
+	virtual l_BOOLEAN operator<(l_types& l) const override	{ return this->operator<(dynamic_cast<array_l&>(l));}
+
+
 	array_l& get() {
 		return *this;
 	}
@@ -244,6 +288,12 @@ public:
 	virtual l_BOOLEAN operator==(l_types& l) const override {
 		return this->operator==(dynamic_cast<list_l&>(l));
 	}
+	virtual l_BOOLEAN operator!=(l_types& l) const override { return this->operator!=(dynamic_cast<list_l&>(l));}
+	virtual l_BOOLEAN operator>=(l_types& l) const override { return this->operator>=(dynamic_cast<list_l&>(l));}
+	virtual l_BOOLEAN operator<=(l_types& l) const override { return this->operator<=(dynamic_cast<list_l&>(l));}
+	virtual l_BOOLEAN operator>(l_types& l) const override	{ return this->operator>(dynamic_cast<list_l&>(l));}
+	virtual l_BOOLEAN operator<(l_types& l) const override	{ return this->operator<(dynamic_cast<list_l&>(l));}
+
 	list_l& get(){
 		return *this;
 	}
@@ -297,8 +347,14 @@ public:
 	}
 
 	virtual l_BOOLEAN operator==(l_types& l) const override {
-		return new l_BOOLEAN(false);
+		return this->operator==(dynamic_cast<sentence_l&>(l));
 	}
+
+	virtual l_BOOLEAN operator!=(l_types& l) const override { return this->operator!=(dynamic_cast<sentence_l&>(l)); }
+	virtual l_BOOLEAN operator>=(l_types& l) const override { return this->operator>=(dynamic_cast<sentence_l&>(l)); }
+	virtual l_BOOLEAN operator<=(l_types& l) const override { return this->operator<=(dynamic_cast<sentence_l&>(l)); }
+	virtual l_BOOLEAN operator>(l_types& l) const override { return this->operator>(dynamic_cast<sentence_l&>(l)); }
+	virtual l_BOOLEAN operator<(l_types& l) const override { return this->operator<(dynamic_cast<sentence_l&>(l)); }
 
 	virtual void set(int i, l_types* item) override {
 		at(i) = dynamic_cast<l_WORD*> (item);
@@ -477,7 +533,7 @@ void clear_l() {
 }
 
 class setxy_l {
-	int a;
+	double a;
 public:
 	setxy_l() {}
 	setxy_l& operator=(l_types &a_) {
@@ -547,14 +603,14 @@ public:
 
 #define TRUE true
 #define FALSE false
-#define MAKE ;auto
+#define MAKE ;auto&
 
 #define NUMBER (*new l_NUMBER()) = 0? 0
 #define WORD (*new l_WORD()) = 0? ""
 #define BOOLEAN (*new l_BOOLEAN()) = 0? true
 #define LIST (*new list_l())
 #define ARRAY (*new array_l()) =  array_l
-#define SENTENCE(...) *new sentence_l(__VA_ARGS__);
+#define SENTENCE(...) *new sentence_l(__VA_ARGS__)
 
 #define AND and_l
 #define OR or_l
@@ -562,8 +618,6 @@ public:
 #define ELSE ;}else{
 #define IF	;varstack::instance()->ifcalled(); \
 			if(
-#define DO ){ 
-#define END  ;}; varstack::instance()->pop();
 
 #define ASSIGN ;
 #define SUM sum_l
@@ -584,7 +638,7 @@ public:
 					while(  (varstack::instance()->increment()) && 
 
 #define ELEM *ELEM
-#define FOREACH for (auto ELEM :
+#define FOREACH ;varstack::instance()->ifcalled(); for (auto ELEM :
 
 #define FORWARD	;forward_l() =
 #define BACK	;back_l() = 
@@ -610,3 +664,6 @@ public:
 #define FSTART ;
 #define RETURN ;return ;
 #define FEND ;return;}
+
+#define DO ){ 
+#define END  ;}; varstack::instance()->pop();
