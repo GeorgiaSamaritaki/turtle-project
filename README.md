@@ -1,6 +1,6 @@
-HY352 Project - Logo GUI
+Turtle prpject - Logo GUI
 ========================
-
+This is a small cpp project i developed during a course
 
 **This file contains instructions for installing Allegro and building the demo project.**
 
